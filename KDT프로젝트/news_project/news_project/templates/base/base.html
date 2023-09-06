@@ -1,0 +1,680 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+<meta name="generator" content="Hugo 0.111.3">
+<title>오늘의 간추린 뉴스</title>
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+<!-- css -->
+<link rel="stylesheet" type="text/css" href="{% static 'news/content.css' %}">
+
+<!-- javascripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<!-- icon -->
+<link rel="shortcut icon" href="{% static 'news/logo.ico' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://kit.fontawesome.com/7156905f88.js" crossorigin="anonymous"></script>
+
+<!-- font -->
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<!-- 나눔글꼴 적용 시험/기본 폰트랑 차이 없음 -->
+<link href='http://www.openhiun.com/hangul/nanumbarungothic.css' rel='stylesheet' type='text/css'>
+
+
+{% block header %}
+{% endblock %}
+
+<style>
+  /* 전체 css */
+  body{
+    font-family: 'Nanum Barun Gothic', sans-serif;
+  }
+  li{
+    list-style: none;
+  }
+  .bi {
+    vertical-align: -.125em;
+    fill: currentColor;
+  }
+
+  .nav-item a {
+    font-size: 14px;
+  }
+
+  .text-center {
+    font-size: 10px;
+  }
+
+  #logo {
+    font-family: 'Black Han Sans', sans-serif;
+  }
+
+  /* 본문 css */
+#ul1 a{
+  text-decoration: none;
+  color: black;
+  transition: 0.3s;
+}
+
+#ul1 .articleurl:hover{
+  color: rgb(62, 116, 255);
+}
+
+/* load-more 버튼 */
+#load-more {
+  width: calc((100% / 3) - 8px);
+  padding: 16px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15rem;
+  margin-bottom: 10px;
+}
+
+#wrapper{
+  margin-right: 25px;
+  width: inherit;
+  text-align: center;
+  margin-top: 50px;
+}
+#load-more:not([disabled]):hover {
+  color: white;
+  background-color: #b2b2b2;
+  box-shadow: 0 1px 9px rgba(0, 0, 0, 0.2);
+}
+
+#load-more[disabled] {
+  background-color: #eaeaea !important;
+}
+/* 프로필 아이콘 클릭시 드롭다운 제공 */
+#dropdown_menu{
+  z-index: 99;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  padding-top: 2px;
+  padding-bottom: 6px;
+  border-radius: 5%;
+  margin-right: auto;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+}
+
+#dropdown_menu #flex{
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+  width: 100px;
+  height: 30px;
+  transition: 0.2s;
+}
+#dropdown_menu #flex a{
+  font-size: small;
+  text-decoration: none;
+  color: black;
+  transition: 0.2s;
+}
+
+#dropdown_menu #flex:hover{
+  background-color: #cacaca;
+}
+#dropdown_menu #flex:hover a{
+  color: white;
+}
+
+
+#menu_user{
+  text-align: center;
+  font-size: small;
+  border-bottom: 1px solid #c7c7c7;
+}
+
+#menu_user p{
+  margin: 0;
+}
+/* 우상단 아이콘 호버시 툴팁 제공 */
+#toolwrap:hover #tooltip{
+  visibility: visible;
+}
+
+#tooltip{
+  border-radius: 10px;
+  display: block;
+  background-color: #c7c7c7;
+  position: absolute;
+  font-size: 10px;
+  width: 50px;
+  height: 30px;
+  z-index: 4;
+  visibility: hidden;
+  margin: 0 auto;
+}
+
+#tooltip::before{
+  border-top: 0px solid transparent;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #c7c7c7;
+  content: "";
+  position: relative;
+  bottom: 19px;
+  left: 19px;
+}
+
+#tooltip span{
+  position: relative;
+  top: 25%;
+  color: white;
+  text-align: center;
+}
+
+.nav-item a{
+  color: #808080;
+  text-decoration: none;
+}
+
+.nav-item a:hover{
+  color: #0d0d0d;
+  text-decoration: underline;
+}
+/* 카테고리 checkbox */
+.checkli li{
+    list-style: none;
+    margin-left: 28px;
+    margin-bottom: 5px;
+    position: relative;
+}
+.checkli label{
+  margin-left: 5px;
+  font-size: 15px;
+  top: 0;
+  position: absolute;
+}
+/* 검색창 */
+#search{
+  display: flex;
+  width: 141.78px;
+  flex-direction: row;
+  border: 1px solid #808080;
+  border-radius: 3px;
+}
+
+#search_icon{
+  margin-left: 5px;
+}
+#search_box{
+  width: 120px;
+  font-size: 11px;
+  border: none;
+  margin-left: 2px;
+  padding: 3px;
+}
+#search_box:focus{
+  outline: none;
+}
+
+</style>
+{% if request.user.is_authenticated %}
+<script>
+  // dropdown 메뉴 이외의 공간 클릭시 dropdown 메뉴 닫기
+  document.addEventListener('mouseup', function (e) {
+    var layerPopup = document.querySelector('#dropdown_menu');
+    var layerPopup2 = document.querySelector('#drop_a');
+    if (!layerPopup.contains(e.target) && !layerPopup2.contains(e.target)) {
+      document.getElementById("dropdown_menu").style.display = 'none';
+      document.getElementById("dropdown_menu").value = 'none';
+    }
+  });
+</script>
+{% endif %}
+<script>
+ // user 아이콘 클릭시 dropdown 열고 닫는 토글
+  function showHide(id){
+    var e = document.getElementById(id);
+    if (e.value == "none"){
+      e.style.display = 'block';
+      e.value = 'block';
+    }else if(e.value=='block'){
+      e.style.display = 'none';
+      e.value = 'none';
+    }else{ //e.value가 undefined 일 때,(페이지 로드하고도 value에 접근을 못하는지 안됨)
+      e.style.display = 'block';
+      e.value = 'block';
+    }
+  }
+
+  function alt(){
+    if(confirm('로그인이 필요한 기능입니다. \n 로그인 하시겠습니까?')){
+      window.location.href = '/users/login'
+    }
+  }
+
+</script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <style>
+        /* 헤더 스타일시트 */
+        #nav_wrap{
+          display: flex;
+          position: absolute;
+          left: 50%;
+          margin-left: -73.6px;
+          text-align: center;
+          top: 30px;
+          /* margin-left: 38.2%; */
+          background-color: white;
+          z-index: 1;
+        }
+
+        #navmain{
+          border: 1px solid black;
+        }
+
+        #navcont{
+          border: 1px solid black;
+        }
+
+        #navintr{
+          border: 1px solid black;
+        }
+        #profil{
+          z-index: 99;
+        }
+      </style>
+      <!-- 헤더 부분 -->
+      <div class="px-3 py-1 text-bg-white p-3 bg-body" style="box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); margin-bottom: 5px;">
+        <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" style="margin-top: -10px; margin-right: 8px;"><img src="{% static 'news/logo.ico' %}" alt=""
+                width="40" height="39"></a>
+            <a href="/" style="font-size: 35px; color: #808080;"
+              class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-decoration-none" id="logo">
+              오간뉴
+            </a>
+            <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+              <li>
+                <!-- 헤더 오른쪽에 있는 아이콘 -->
+                <!-- 아이콘 추가할 때 폰트어썸 사용했으면 fa-lg 옵션 부여해야 됩니다. -->
+                <div id="toolwrap">
+                  <a href="/introduction" class="nav-link text-dark">
+                    <i class="fa-solid fa-circle-info fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <p id="tooltip" style="width: 85px;"><span style="position: absolute; margin-left: 3px;">Introduction</span></p>
+                </div>
+              </li>
+              <li>
+              <li>
+                <div id="toolwrap">
+                  <a href="/how" class="nav-link text-dark">
+                    <i class="fa-solid fa-lightbulb fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <p id="tooltip"><span style="position: absolute; margin-left: 3px;">How</span></p>
+                </div>
+              </li>
+              <li>
+                <div id="toolwrap">
+                  <!-- <a href="/index" class="nav-link text-dark">
+                    <i class="fa-solid fa-star fa-lg" style="color: #808080;"></i> -->
+                    <a href="/main" class="nav-link text-dark">
+                      <i class="fa-solid fa-list fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <p id="tooltip"><span style="position: absolute; margin-left: -3px;">Articles</span></p>
+                  <!-- <p id="tooltip"><span style="position: absolute; margin-left: -6px;">Keyword</span></p> -->
+                </div>
+              </li>
+              <li>
+                {% if request.user.is_authenticated %}
+                <div id="toolwrap">
+                  <a href="/scrap" class="nav-link text-dark">
+                    <i class="fa-solid fa-bookmark fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <p id="tooltip"><span>Scrap</span></p>
+                </div>
+                {% else %}
+                <div id="toolwrap">
+                  <a href="#" class="nav-link text-dark" onclick="alt()">
+                    <i class="fa-solid fa-bookmark fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <p id="tooltip"><span>Scrap</span></p>
+                </div>
+                {% endif %}
+              </li>
+              <li>
+                <!-- 로그인 시 유저 편의기능 메뉴 표시 -->
+                {% if request.user.is_authenticated %}
+                <div id="profil">
+                  <a href="#" class="nav-link" id="drop_a" onclick="showHide('dropdown_menu')">
+                    <i class="fa-solid fa-circle-user fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <div id="dropdown_menu" value="none" style="display: none;">
+                    <div id="menu_user"><p>{{request.user.username}}</p></div>
+                    <div id="flex" onclick="modal_open('pass_modal_hide')"><a href="#">Password</a></div>  <!--  진행 예정(preset을 저장할 추가적인 DB필요)  -->
+                    <div id="flex" onclick="modal_open('wd_modal_hide')"><a href="#">Withdrawal</a></div>  <!--  진행 예정  -->
+                    <div id="flex"><a href="/users/logout">Logout</a></div>
+                  </div>
+                </div>
+                <!-- 비로그인 시 스크랩 아이콘 누르면 로그인 화면으로 이동 -->
+                {% else %}
+                <div id="toolwrap">
+                  <a href="/users/login" class="nav-link text-dark">
+                    <i class="fa-solid fa-circle-user fa-lg" style="color: #808080;"></i>
+                  </a>
+                  <p id="tooltip"><span>Login</span></p>
+                </div>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+  </main>
+
+  
+  <!-- 본문이 들어갈 공간 -->
+  {% block content %}
+  {% endblock %}
+
+
+  <div id="footer" class="px-4 py-1 mb-0 text-bg-white"
+    style="box-shadow: 0 -.125rem .25rem rgba(0,0,0,.075); padding: 0; height: 153px; margin-bottom: 0px;">
+    <div class="container">
+      <footer class="py-3 my-4">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+          <!-- 각자의 github 링크 연결 -->
+          <li class="nav-item"><a href="https://github.com/iameun02" class="nav-link px-1 text-body-secondary" target="_blank">고은영</a></li>
+          <li class="nav-item"><a href="https://github.com/kihyun2" class="nav-link px-1 text-body-secondary" target="_blank">박기현</a></li>
+          <li class="nav-item"><a href="https://github.com/DevRyu10" class="nav-link px-1 text-body-secondary" target="_blank">유재찬</a></li>
+          <li class="nav-item"><a href="https://github.com/minu-97" class="nav-link px-1 text-body-secondary" target="_blank">조민우</a></li>
+          <li class="nav-item"><a href="https://github.com/Eric4848" class="nav-link px-1 text-body-secondary" target="_blank">하정수</a></li>
+        </ul>
+        <p class="text-center text-body-secondary"><img src="{% static 'news/logo.ico' %}" alt="" width="20"
+            height="20" style="margin-right: 5px;"> 오간뉴 prod by 매추리</p>
+      </footer>
+    </div>
+  </div>
+  <!-- 모달창 -->
+  <style>
+    /* 비밀번호 변경 */
+    #pass_modal_hide{
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    
+    #pass_modal_wrap{
+      backdrop-filter: blur(5px);
+      position: absolute;
+      display: block;
+      z-index: 2;
+      background-color: rgba(0, 0, 0, 0.6);
+      /* filter: blur(10px); */
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pass_modal{
+      position: absolute;
+      display: block;
+      width: 600px;
+      height: 400px;
+      z-index: 3;
+      border-radius: 10px;
+      background-color: rgb(255, 255, 255);
+      top: 50%;
+      left: 50%;
+      margin-left: -300px;
+      margin-top: -200px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      animation: down_modal 0.5s ease
+    }
+
+    @keyframes down_modal {
+      0%{
+        opacity: 0;
+        transform: translateY(-100px)
+      }
+      100%{
+        opacity: 1;
+        transform: translateY(0px)
+      }
+    }
+
+    /* 회원탈퇴 */
+    #wd_modal_hide{
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    #wd_modal_wrap{
+      position: absolute;
+      display: block;
+      z-index: 2;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      /* filter: blur(10px); */
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #wd_modal{
+      position: absolute;
+      display: block;
+      width: 600px;
+      height: 400px;
+      z-index: 3;
+      border-radius: 10px;
+      background-color: white;
+      top: 50%;
+      left: 50%;
+      margin-left: -300px;
+      margin-top: -200px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      animation: down_modal 0.5s ease
+    }
+    /* 비밀번호 변경 form */
+    #passwordform{
+      height: 150.44px;
+      margin-top: 10%;
+    }
+
+    #passwordform div{
+      margin: auto;
+      margin-bottom: 20px;
+      padding-left: 207.11px;
+    }
+
+    #passwordform label{
+      letter-spacing: 0.15rem;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    #buttondiv{
+      text-align: center;
+      
+    }
+    
+    #buttondiv button{
+      font-size: 12px;
+    }
+
+    #wd_modal button{
+      margin-left: 41.5%;
+    }
+
+    #agree_box{
+      width: 100%;
+      margin-top: 50px;
+    }
+
+    #wd_modal p{
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+
+  <!-- 비밀번호 변경 -->
+  <div id="pass_modal_hide">
+    <div id="pass_modal_wrap">
+    </div>
+    <div id="pass_modal">
+      <div id="passwordform">
+        <form method="post" action="" id="password" name="password">
+          {% csrf_token %}
+          {% for message in messages %}
+          <div>
+            {{message}}
+          </div>
+          {% endfor %}
+          <div>
+            <label for="current-password">Old Password</label>
+            <p><input type="password" name="old_password" id="current-password" autocomplete="current-password" autofocus required id="id_old_password"></p>
+          </div>
+          <div>
+            <label for="new-password1">New Password</label>
+            <p><input type="password" name="new_password1" id="new-password1" autocomplete="new-password" autofocus required id="id_new_password1"></p>
+          </div>
+          <div>
+            <label for="new-password2">Confirm Password</label>
+            <p><input type="password" name="new_password2" id="new-password2" autocomplete="new-password" autofocus required id="id_new_password2"></p>
+          </div>
+          <div id="buttondiv" style="padding-left: 0px;"><button onclick="to_ajax('password',event)" class="btn btn-primary">Save Change</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 회원 탈퇴 -->
+  <div id="wd_modal_hide">
+    <div id="wd_modal_wrap">
+    </div>
+      <div id="wd_modal">
+        <h1 style="position: absolute; width: 100%; text-align: center; margin-top: 50px;">경고</h1>
+        <p style="margin-top: 140px;">회원탈퇴는 되돌릴 수 없습니다.</p>
+        <p>정말로 탈퇴하시겠습니까?</p>
+        <div id="agree_box">
+          <p><input name="agree" type="checkbox" id="agree" style="margin-right: 10px;"><label for="agree">회원 탈퇴에 동의합니다.</label></p>
+        </div>
+        <button class="btn btn-danger" id="del_btn" disabled="true" onclick="location.href='/users/withdrawal/'" style="font-weight: bold;">Withdrawal</button>
+      </div>
+  </div>
+
+  <script>
+    // 모달창 열기
+    function modal_open(id){
+      modal = document.getElementById(id);
+      modal.style.display = 'block';
+      document.getElementById("dropdown_menu").style.display = 'none';
+      document.getElementById("dropdown_menu").value = 'none';
+      document.documentElement.style.overflow='hidden';
+      document.documentElement.style.height='auto';
+    }
+    // 모달창 외의 공간 클릭시 모달창 닫기
+    document.addEventListener('mouseup', function (e) {
+    var layerPopup = document.querySelector('#pass_modal');
+    var layerPopup2 = document.querySelector('#wd_modal');
+    if (!layerPopup.contains(e.target) && !layerPopup2.contains(e.target)) {
+      document.getElementById("pass_modal_hide").style.display = 'none';
+      document.getElementById("wd_modal_hide").style.display = 'none';
+      document.getElementById("current-password").value='';
+      document.getElementById("new-password1").value='';
+      document.getElementById("new-password2").value='';
+      document.documentElement.removeAttribute('style');
+    }
+  });
+  // password ajax 요청 및 응답 처리부분
+  function to_ajax(ur,e){
+    e.preventDefault()
+    var password = $("form[name=password]").serialize() ;
+    
+    $.ajax({
+      type : 'post',
+      url : '/users/password/',
+      data : password,
+      dataType : 'json',
+      error: function(xhr, status, error){
+        alert(error);
+      },
+      success : function(json){
+        if(json.error_code == 0){  // 비밀번호 변경 성공시
+          alert(json.message)
+          document.getElementById("current-password").value='';
+          document.getElementById("new-password1").value='';
+          document.getElementById("new-password2").value='';
+          document.getElementById("pass_modal_hide").style.display = 'none';
+          updateCSRFToken();
+          document.documentElement.removeAttribute('style');
+        }else{
+          modal_open('pass_modal_hide')
+          alert(json.message)
+        }
+      }
+    });
+
+  }
+// 비밀번호 변경시 csrf 토큰이 쿠키와 맞지 않아 변경 -> (새로고침 없이)또 변경 하면 403 오류
+// 쿠키에서 원래 csrf 토큰 가져와서 업데이트
+  function updateCSRFToken() {
+  const csrftoken = getCookie('csrftoken');
+  
+  $('#password input[name="csrfmiddlewaretoken"]').val(csrftoken);
+}
+// 쿠키 가져오기
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// 회원 탈퇴 동의 체크박스
+$(document).ready(function(){
+    $("#agree").change(function(){
+        if($("#agree").is(":checked")){   // 체크 시 탈퇴 버튼 활성화
+            document.querySelector('#del_btn').disabled = false;
+        }else{   // 아닐 시 탈퇴버튼 비활성화
+            document.querySelector('#del_btn').disabled = true;
+        }
+    });
+});
+
+  </script>
+</body>
+</html>

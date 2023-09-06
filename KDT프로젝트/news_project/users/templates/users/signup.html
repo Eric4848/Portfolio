@@ -1,0 +1,259 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up</title>
+  <link rel="shortcut icon" href="{% static 'news/logo.ico' %}">
+</head>
+<style>
+  body {
+    background: #e6e6e6;
+  }
+
+  form {
+    width: 60%;
+    margin: 60px auto;
+    background: #f2f2f2;
+    padding: 60px 120px 80px 120px;
+    text-align: center;
+    -webkit-box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  label {
+    display: block;
+    position: relative;
+    margin: 40px 0px;
+  }
+
+  .label-txt {
+    position: absolute;
+    top: -1.6em;
+    padding: 10px;
+    font-family: sans-serif;
+    font-size: .8em;
+    letter-spacing: 1px;
+    color: rgb(120, 120, 120);
+    transition: ease .3s;
+  }
+
+  .input {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+
+  .line-box {
+    position: relative;
+    width: 100%;
+    height: 2px;
+    background: #d9d9d9;
+  }
+
+  .line {
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgb(189, 189, 189);
+    transition: ease .6s;
+  }
+
+  .input:focus+.line-box .line {
+    width: 100%;
+  }
+
+  .label-active {
+    top: -3em;
+  }
+
+  button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: rgb(220, 220, 220);
+    font-weight: bold;
+    color: rgb(120, 120, 120);
+    border: none;
+    outline: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: ease .3s;
+    font-size: 13px;
+  }
+
+  button:hover {
+    background: #808080;
+    color: #ffffff;
+  }
+
+  #prev {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgb(220, 220, 220);
+      font-weight: bold;
+      color: rgb(120, 120, 120);
+      border: none;
+      outline: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: ease .3s;
+      font-size: 13px;
+    }
+
+    #prev:hover{
+      background: #c34a4a;
+      color: #ffffff;
+    }
+
+    .errorlist{
+      padding: 0;
+      margin-bottom: 0;
+      text-align: left;
+      list-style: none;
+      color: #c34a4a;
+      font-size: 12px;
+    }
+
+    p{
+      padding: 0;
+      margin-bottom: 0;
+      text-align: left;
+      color: #c34a4a;
+      font-size: 12px;
+    }
+    .helptext ul{
+      padding: 0;
+      text-align: left;
+      list-style: none;
+      color: #4a76c3;
+      font-size: 12px;
+    }
+    .hidden{
+      /* visibility: hidden !important; */
+      display: none;
+    }
+    
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const inputs = document.querySelectorAll('.input');
+    const labels = document.querySelectorAll('.label-txt');
+
+    inputs.forEach(function (input) {
+      input.addEventListener('focus', function () {
+        const parent = this.parentNode;
+        const label = parent.querySelector('.label-txt');
+        label.classList.add('label-active');
+      });
+
+      input.addEventListener('blur', function () {
+        const parent = this.parentNode;
+        const label = parent.querySelector('.label-txt');
+        if (this.value.trim() === '') {
+          label.classList.remove('label-active');
+        }
+      });
+    });
+
+  });
+  // 비밀번호 8글자 이상 확인
+  function isShort() {
+    const password = document.querySelector('#password1').value;
+    const helptext = document.querySelector('.helptext')
+    if (password.length < 8) {
+      document.getElementById('return1').innerHTML = '영문/숫자 포함 8글자 이상 입력하세요.';
+      document.getElementById('return1').style.color = '#c34a4a';
+      helptext.classList.remove('hidden')
+    }
+    else {
+      document.getElementById('return1').innerHTML = ''
+      helptext.classList.add('hidden')
+    }
+  }
+  // 비밀번호 확인란 확인
+  function isSame() {
+    const password1 = document.querySelector('#password1').value;
+    const password2 = document.querySelector('#password2').value;
+    if (password1 != '' && document.password2 != '') {  
+      if (password1 != password2) {
+        document.getElementById('return2').innerHTML = '비밀번호가 일치하지 않습니다.';
+        document.getElementById('return2').style.color = '#c34a4a';
+      }
+      else {
+        document.getElementById('return2').innerHTML = '';
+        // document.getElementById('return2').innerHTML = '비밀번호가 일치합니다.';
+        // document.getElementById('return2').style.color = '#5887f7';
+      }
+    }
+  }
+</script>
+
+<body>
+  <form method="post" action="{% url 'users:signup' %}">
+    {% csrf_token %}
+
+    <label>
+      <p class="label-txt">ENTER USERNAME</p>
+      <input type="text" class="input" name="username" id="username"
+      value="{{ form.username.value|default_if_none:'' }}">
+      <div class="line-box">
+        <div class="line"></div>
+      </div>
+      {% if form.username.errors %}
+        <span>{{ form.username.errors }}</span>
+      {% endif %}
+    </label>
+    <label>
+      <p class="label-txt">ENTER PASSWORD</p>
+      <input type="password" class="input" name="password1" id="password1" onkeyup="isShort()"
+        value="{{ form.password1.value|default_if_none:'' }}">
+        <div class="line-box">
+        <div class="line"></div>
+      </div>
+      <p id="return1"></p>
+      <!-- 비밀번호 유효성 확인 조건 안내 -->
+      <span class="helptext">{{form.password1.help_text}}</span>
+      {% if form.password1.errors %}
+        <span>{{ form.password1.errors }}</span>
+      {% endif %}
+    </label>
+    <label>
+      <p class="label-txt">CONFIRM PASSWORD</p>
+      <input type="password" class="input" name="password2" id="password2" onkeyup="isSame()"
+        value="{{ form.password2.value|default_if_none:'' }}">
+      <div class="line-box">
+        <div class="line"></div>
+      </div>
+      <p id="return2"></p>
+      {% if form.password2.errors %}
+        <span>{{ form.password2.errors }}</span>
+      {% endif %}
+    </label>
+    <label>
+      <p class="label-txt">ENTER EMAIL</p>
+      <input type="email" class="input" name="email" id="email">
+      <div class="line-box">
+        <div class="line"></div>
+      </div>
+      {% if form.email.errors %}
+        <span>{{ form.email.errors }}</span>
+      {% endif %}
+    </label>
+    <button type="submit">가입</button>
+    <input type="button" id="prev" onclick="location.href='/users/login'" value="뒤로가기"></input>
+  </form>
+</body>
+
+</html>

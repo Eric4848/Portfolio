@@ -1,0 +1,192 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+<link rel="shortcut icon" href="{% static 'news/logo.ico' %}">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <style>
+    body {
+      background: #e6e6e6;
+    }
+
+    form {
+      width: 60%;
+      margin: 60px auto;
+      background: #f2f2f2;
+      padding: 60px 120px 80px 120px;
+      text-align: center;
+      -webkit-box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      position: relative;
+      margin: 40px 0px;
+    }
+
+    .label-txt {
+      position: absolute;
+      top: -1.6em;
+      padding: 10px;
+      font-family: sans-serif;
+      font-size: .8em;
+      letter-spacing: 1px;
+      color: rgb(120, 120, 120);
+      transition: ease .3s;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+
+    .line-box {
+      position: relative;
+      width: 100%;
+      height: 2px;
+      background: rgb(220, 220, 220);
+    }
+
+    .line {
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgb(180, 180, 180);
+      transition: ease .6s;
+    }
+
+    .input:focus+.line-box .line {
+      width: 100%;
+    }
+
+    .label-active {
+      top: -3em;
+    }
+
+    button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgb(220, 220, 220);
+      font-weight: bold;
+      color: rgb(120, 120, 120);
+      border: none;
+      outline: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: ease .3s;
+      font-size: 13px;
+    }
+
+    button:hover {
+      background: #808080;
+      color: #ffffff;
+    }
+
+    #prev {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgb(220, 220, 220);
+      font-weight: bold;
+      color: rgb(120, 120, 120);
+      border: none;
+      outline: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: ease .3s;
+      font-size: 13px;
+    }
+
+    #prev:hover{
+      background: rgb(220, 80, 80);
+      color: #ffffff;
+    }
+
+    #create {
+      text-decoration: none;
+      color: rgb(120, 120, 120);
+      font-size: 13px;
+    }
+
+    input:autofill,
+    input:autofill:hover,
+    input:autofill:focus,
+    input:autofill:active {
+      -webkit-text-fill-color: #000;
+      box-shadow: 0 0 0px 1000px #f2f2f2 inset;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      const inputs = document.querySelectorAll('.input');
+      const labels = document.querySelectorAll('.label-txt');
+
+      inputs.forEach(function (input) {
+        input.addEventListener('focus', function () {
+          const parent = this.parentNode;
+          const label = parent.querySelector('.label-txt');
+          label.classList.add('label-active');
+        });
+
+        input.addEventListener('blur', function () {
+          const parent = this.parentNode;
+          const label = parent.querySelector('.label-txt');
+          if (this.value.trim() === '') {
+            label.classList.remove('label-active');
+          }
+        });
+      });
+
+    });
+  </script>
+</head>
+
+<body>
+  {% if error %}
+  <script>
+      // 비밀번호 틀렸을 경우
+      $(document).ready(function(){
+        alert('아이디나 비밀번호를 확인하세요.')
+    });
+    </script>
+  {% endif %}
+
+  <form method="post" action="{% url 'users:login' %}">
+    {% csrf_token %}
+    <label>
+      <p class="label-txt">ENTER YOUR USERNAME</p>
+      <input type="text" class="input" name="username" id="username">
+      <div class="line-box">
+        <div class="line"></div>
+      </div>
+    </label>
+    <label>
+      <p class="label-txt">ENTER YOUR PASSWORD</p>
+      <input type="password" class="input" name="password" id="password">
+      <div class="line-box">
+        <div class="line"></div>
+      </div>
+    </label>
+    <p><a id="create" href="/users/signup" style="font-size: small;">회원가입<a></p>
+    <button type="submit">로그인</button>
+    <input id="prev" type="button" onclick="location.href='javascript:window.history.back()'" value="뒤로가기"></input>
+  </form>
+</body>
+
+</html>

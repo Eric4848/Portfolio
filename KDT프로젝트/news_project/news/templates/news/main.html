@@ -1,0 +1,520 @@
+{% extends 'base/base.html' %}
+
+  {% block header %}
+  <!-- 유저가 스크랩한 리스트 가져오기  -->
+  <script>
+    // 사이드 카테고리 여닫기
+    function openNav() {
+      let sidepanel = document.getElementById('innerSidepanel');
+      sidepanel.classList.add('openn')
+    }
+  
+    function closeNav() {
+      let sidepanel = document.getElementById('innerSidepanel');
+      sidepanel.classList.remove('openn')
+    }
+  
+    // 카테고리 패널 외 클릭 시 패널 닫기
+    document.addEventListener('mouseup', function (e) {
+      var layerPopup = document.querySelector('#innerSidepanel');
+      if (!layerPopup.contains(e.target)) {
+        layerPopup.classList.remove('openn')
+      }
+    });
+  
+    // 화면 크기에 맞게 재조정
+    function div2Resize() {
+      var ul1 = document.getElementById('ul1');
+      var div2 = document.getElementById('content');
+      var row = document.querySelector('.row');
+      var button_col = document.getElementById('button_col');
+      var summary_col = document.getElementById('summary_col');
+      // row -> content
+      // button_col -> row.height
+      // summary_col -> ul1
+      var col = row.childNodes
+      div2.style.height = (ul1.scrollHeight + 32) + 'px';
+      row.style.height = (ul1.scrollHeight + 32) + 'px';
+      // button_col.style.height = (ul1.scrollHeight + 32) + 'px';
+      // summary_col.style.height = (ul1.scrollHeight + 32) + 'px';
+    }
+    window.onload = function () {
+      div2Resize();
+      // 브라우저 크기가 변할 시 동적으로 사이즈를 조절해야 하는경우
+      window.addEventListener('resize', div2Resize);
+      // document.getElementById('test').addEventListener('click', div2Resize)
+    }
+  
+    // 스크랩 여닫을 때 화면크기 조정
+    function rresize() {
+      const $target = document.querySelector('#ul1')
+      const observer = new ResizeObserver((entries) => {
+        // 관찰 중인 배열 형식의 객체 리스트
+        entries.forEach((entry) => {
+          var ul1 = document.getElementById('ul1');
+          var div2 = document.getElementById('content');
+          var button_col = document.getElementById('button_col');
+          div2.style.height = (ul1.scrollHeight + 32) + 'px';
+          button_col.style.height = (ul1.scrollHeight + 32) + 'px';
+        });
+      });
+  
+  // 크기변화를 관찰할 요소지정
+      observer.observe($target);
+    }
+  </script>
+  {% endblock %}
+  {% block content %}
+  {% if q %}
+    <input id="search_q" type="text" value="{{q}}" style="display: none;">
+  {% endif %}
+  {% if press_list %}
+    <input id="press" type="hidden" value="{{press_list}}">
+  {% endif %}
+  {% if section_list %}
+    <input id="section" type="hidden" value="{{section_list}}">
+  {% endif %}
+  <div id="chk">
+    {% for scp in scrap %}
+      <div id="scrap_test" style="display: none;">{{scp.article_id}}</div>
+    {% endfor %}
+  </div>
+  <!-- 카테고리, 본문 -->
+  
+  <style>
+    .fix {
+      position:fixed;
+    }
+
+    #searchnav{
+      z-index: 2;
+      visibility: visible;
+      position: sticky;
+      top: -1px;
+      display: flex;
+      width: 100vw;
+      height: 50px;
+      background-color: white;
+      align-items: center;
+      box-shadow: 0px 4px 3px -2px rgba(0,0,0,.075);
+    }
+
+    #section{
+      display: flex;
+      flex-direction: row;
+      width: 1200px;
+      /* margin: 0 auto; */
+      justify-content: space-between;
+      align-items: center;
+      z-index: 3;
+    }
+
+    .navopenbtn{
+      font-size: 20px;
+      cursor: pointer;
+      background-color: #ffffff00;
+      color: rgb(84, 84, 84);
+      border: none;
+      border-top-left-radius: 10px;
+      position: sticky;
+      top: 0;
+      transition: 0.5s;
+    }
+
+    .navopenbtn:hover{
+      color: #a5a5a4;
+      transition: 0.3s;
+    }
+
+    #nav_search{
+      display: flex;
+      flex-direction: row;
+      border: 1px solid #808080;
+      border-radius: 4px;
+      width: 305px;
+    }
+
+    #nav_search_box{
+      width: 280px;
+      font-size: 11px;
+      border: none;
+      margin-left: 2px;
+      padding: 3px;
+    }
+
+    #nav_search_box:focus{
+      outline: none;
+    }
+  </style>
+  <div id="searchnav" style="margin-top: -5px;">
+    <div id="section" class="container">
+      <button id="navopen" class="navopenbtn" onclick="openNav()"><i class="fa-solid fa-bars"></i></button>
+      <div id="nav_searchwrap">
+        <form id="nav_search" action="/search/">
+          <div id="nav_search_icon" style="margin-left: 5px;"><i class="fa-solid fa-magnifying-glass fa-xs" style="color: #808080;"></i></div>
+          <input id="nav_search_box" type="search" name="search" placeholder="검색">
+          <input type="hidden" value="{{press_list}}" name="press">
+          <input type="hidden" value="{{section_list}}" name="section">
+        </form>
+      </div>
+      <a href="#"><i class="fa-solid" style="color: #7a7a7a;">TOP</i></a>
+    </div>
+  </div>
+  <div id="content" class="container" style="min-height: 1080px;">
+    
+    <div class="row">
+      <!-- 카테고리 -->
+      <div id="button_col" class="col-1" style="padding: 0; width:32px; margin-left: 80px;">
+      <style>
+        .sidepanel{
+          position: relative;
+          overflow: hidden;
+          width: 180px;
+          height: 690px;
+          transform: translateX(-150px);
+          top: 0;
+        }
+        #innerSidepanel{
+          position:absolute;
+          background-color: #fafbfc;
+          width: 180px;
+          height: 690px;
+          left:100%; top:0; bottom:0; right:-100%;
+          transform-origin:50% 50%;
+          transition:0.5s;
+        }
+        .openn{
+          left: 0 !important;
+          right: 0 !important;
+        }
+        #stickypanel{
+          position: sticky;
+          top: 50px;
+        }
+        input[type=checkbox] {
+          zoom: 1.5;
+        }
+
+      </style>
+      <div id="stickypanel">
+        <div id="mySidepanel" class="sidepanel">
+          <div id="innerSidepanel">
+          <div class="closebbtn"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></div>
+          <div class="flex-shrink-0 p-3" style="width: 180px; height: 690px;">
+            <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
+              <span class="fs-5 fw-semibold">Category</span>
+            </a>
+            <form method="post">
+              {% csrf_token %}
+              <div class="category">
+                <ul class="list-unstyled ps-0">
+                  <li class="mb-1">
+                    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                      data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true" type="button">
+                      언론사 선택
+                    </button>
+                    <div class="collapse show" id="home-collapse" style="margin-top:5px;">
+                      <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <div class="checkli">
+                        <li><input type="checkbox" id="press1" name="press" value="032"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press1" class="llabel">경향신문</label></li>
+                        <li><input type="checkbox" id="press2" name="press" value="005"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press2" class="llabel">국민일보</label></li>
+                        <li><input type="checkbox" id="press3" name="press" value="020"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press3" class="llabel">동아일보</label></li>
+                        <li><input type="checkbox" id="press4" name="press" value="021"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press4" class="llabel">문화일보</label></li>
+                        <li><input type="checkbox" id="press5" name="press" value="081"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press5" class="llabel">서울신문</label></li>
+                        <li><input type="checkbox" id="press6" name="press" value="022"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press6" class="llabel">세계일보</label></li>
+                        <li><input type="checkbox" id="press7" name="press" value="023"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press7" class="llabel">조선일보</label></li>
+                        <li><input type="checkbox" id="press8" name="press" value="025"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press8" class="llabel">중앙일보</label></li>
+                        <li><input type="checkbox" id="press9" name="press" value="028"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press9" class="llabel">한겨례</label></li>
+                        <li><input type="checkbox" id="press10" name="press" value="469"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="press10" class="llabel">한국일보</label></li>
+                        </div>
+                      </ul>
+                    </div>
+                  </li>
+                  <li class="mb-1">
+                    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                      data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="true" type="button">
+                      분야 선택
+                    </button>
+                    <div class="collapse show" id="dashboard-collapse" style="margin-top:5px;">
+                      <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <div class="checkli">
+                        <li><input
+                              type="checkbox" id="section1" name="section" value="100"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="section1" class="llabel">정치</label> </li>
+                        <li><input
+                              type="checkbox"id="section2"  name="section" value="101"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="section2" class="llabel">경제</label></li>
+                        <li><input
+                              type="checkbox" id="section3" name="section" value="102"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="section3" class="llabel">사회</label></li>
+                        <li><input
+                              type="checkbox" id="section4" name="section" value="104"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="section4" class="llabel">세계</label></li>
+                        <li><input
+                              type="checkbox" id="section5" name="section" value="105"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded"><label for="section5" class="llabel">IT</label></li>
+                        </div>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <input type="submit" class="btn btn-primary btn-sm" value="검색">
+              <input type="button" class="btn btn-danger btn-sm" value="초기화" onclick="location.replace(location.href)">
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+      <!-- 요약 기사 출력 부분 -->
+      <style>
+        .contentwrap{
+          margin-right: 10px;
+          font-size: 15px;
+          letter-spacing: 0.04rem;
+        }
+
+        .highlight{
+          background-color: yellow;
+          font-weight: bold;
+        }
+
+        #count{
+          float: right;
+          font-size: 5px;
+          text-align: right;
+          letter-spacing: 1px;
+        }
+
+        #searchwrap{
+          float: right;
+          display: flex;
+          flex-direction: column;
+        }
+
+        tr{
+          padding-bottom: 20px;
+        }
+        
+      </style>
+      <div id="summary_col" class="col-9">
+        {% if q %}
+          {% if articles_count == 0 %}
+            <b>입력한 검색어 "{{q}}"(와)과 일치하는 결과가 없습니다.</b>
+          {% endif %}
+        {% endif %}
+        <div class="summary">
+          <ul id="ul1" style="max-width: 85%;">
+
+            {% for article in articles %}
+            <!-- <div>{{article.since_time}}</div> -->
+            <li>
+              <div id="div{{article.id}}">
+                <table id="startsc" width="100%">
+                  <tr style="text-align: center;">
+                    <td style="text-align: left; padding-bottom: 15px;"><a href="{{article.url}}" target='_blank' style="font-size: 15px;"><b>[{{article.press.name}}, {{article.section.name}}]  {{article.headline}}</b></a></td>
+                    <td width="150px" style="text-align: right; margin-bottom: 0px; font-size: 12px;">{{article.created_date.year}}년 {{article.created_date.month}}월 {{article.created_date.day}}일</td>
+                    <td style="text-align: right; margin-right: 0px; font-size: 12px; padding-right: 15px; width: 85px;">{{article.writer}}</td>
+                    <td rowspan="4" width="50px">
+                      {% if request.user.is_authenticated %}
+                      <!-- <i class="fa-solid fa-bookmark fa-lg" style="color: #000000;"></i> -->
+                      <button class="btn btn-warning" onclick='sendID(this)' value="{{article.id}}">scrap</button>
+                      {% else %}
+                      <button onclick="alt()" class="btn btn-warning">scrap</button>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" style="padding-top: 10px; padding-bottom: 20px;"><a href="{{article.url}}" target='_blank'><div class="contentwrap">{{article.content}}</div></a></td>
+                  </tr>
+                  <!-- {% for centence in article.centence_split %}
+                  <tr>
+                    <td colspan="3" style="padding-top: 10px;"><a href="{{article.url}}" target='_blank'><div class="contentwrap">&nbsp; {{centence}}다.</div></a></td>
+                  </tr>
+                  {% endfor %} -->
+                </table>
+                <hr>
+              </div>
+            </li>
+            {% endfor %}
+            <!-- ajax 응답 요청 기사 출력부 -->
+            <div id="post_list_ajax">
+              <!-- main_ajax.html -->
+            </div>
+            <input id="page" type="hidden" value="2">
+            
+            <div id="wrapper">
+              <button id="load-more" onclick="click_load_more()">load more</button>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if q %}
+  <script>
+    function highlight(){
+      var q = $('#search_q').val();
+      $('.contentwrap:contains("'+q+'")').each(function(){
+        var regex = new RegExp(q,"gi");
+        $(this).html($(this).text().replace(regex, "<span class='highlight'>"+q+"</span>"));
+      });
+    }
+    highlight();
+  </script>
+  {% endif %}
+  <script>
+    
+    // // 스크롤 시 검색창 열기
+    // function scrollNav(){
+    //   const search = document.getElementById('startsc');
+    //   const searchheight = search.clientHeight;
+    //   console.log(searchheight)
+    //   document.addEventListener('scroll',onScroll,{passive:true});
+
+    //   const sidepan = document.getElementById('mySidepanel');
+    //   const navbutton = document.getElementById('navopen');
+    //   let siderect = sidepan.getBoundingClientRect();
+    //   let originTop = siderect.top;
+    //   let originLeft = siderect.left;
+
+    //   let navrect = navbutton.getBoundingClientRect();
+    //   const btnTop = navrect.top;
+    //   const btnLeft = navrect.left;
+
+    //   function onScroll(){
+    //     const scrollposition = pageYOffset;
+    //     const navbar = document.getElementById('searchnav');
+    //     if (searchheight<=scrollposition){
+    //       navbar.style.visibility='visible';
+    //       navbar.classList.add('fix');
+    //       sidepan.style.top = btnTop + 'px';
+    //       sidepan.style.left = btnLeft + 'px';
+    //     }
+    //     else{
+    //       navbar.classList.remove('fix');
+    //       // navbar.style.visibility='hidden';
+    //       sidepan.style.top = originTop + 'px';
+    //       sidepan.style.left = originLeft + 'px';
+    //     }
+    //   }
+    // }
+    // scrollNav();
+  </script>
+  <script>
+    var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+    const loadmore= document.getElementById('load-more')
+    var isEnd = false
+    
+    // 무한 스크롤로 구현
+    $(window).scroll(function(){
+      var scrollHeight = $(window).scrollTop() + $(window).height();
+      var documentHeight = $(document).height();
+            if (!isEnd){
+              loadmore.classList.add('disabled');
+              loadmore.setAttribute('disabled', false)
+              if (scrollHeight + 300 >= documentHeight){
+                var q = "{{q}}"
+                var press_list = $("#press").val();
+                var section_list = $("#section").val();
+                var page = $("#page").val();
+                callMorePostAjax(page, press_list, section_list, q);
+                $("#page").val(parseInt(page)+1);
+              }
+            }
+        });
+
+    // load more 버튼으로 구현
+    // function click_load_more(){
+    //   if(!isEnd){
+    //     var q = "{{q}}"
+    //     var press_list = $("#press").val();
+    //     var section_list = $("#section").val();
+    //     var page = $("#page").val();
+    //     callMorePostAjax(page, press_list, section_list, q);
+    //     $("#page").val(parseInt(page)+1);
+    //   }else{
+    //     loadmore.innerText='No Data';
+    //     loadmore.setAttribute('disabled', false);
+    //   }
+    // }
+    
+    // 요약기사 추가 요청(ajax)
+    function callMorePostAjax(page, press_list, section_list,q) {
+        $.ajax( {
+        type : 'POST',
+        url: "/main_ajax/",
+        data: {
+        'page': page,
+        'press':press_list,
+        'section':section_list,
+        'q':q,
+        'csrfmiddlewaretoken': token,
+        },
+        success: addMorePostAjax,
+        dataType: 'html'
+        });
+    }
+
+    // 요약 기사 출력
+    function addMorePostAjax(data, textStatus, jqXHR) {
+      $('#post_list_ajax').append(data);
+      div2Resize();
+      $('#ul1 li button').each(function (index, item){
+      // ajax로 요약기사가 된 후에 arr를 통해 이미 스크랩한 버튼 비활성화
+      if (item.value == arr[0]){
+        arr.shift()
+        item.disabled = true;
+      }
+      })
+      if (typeof highlight === 'function'){
+        highlight();
+      }
+    }
+
+    // 유저가 scrap버튼 클릭시 스크랩 후 비활성화 요청(ajax) 
+    function sendID(id) {
+    $.ajax({
+      type: 'GET',
+      url: '/scrap/insert/' + id.value,
+      data: {
+
+      },
+      success: () => {
+        id.disabled = true
+      },
+      error: (err) => {
+        console.log(err)
+      }
+    });
+  }
+
+    // 스크랩 된 내용의 스크랩 버튼 비활성화
+    arr = []
+
+    $(document.querySelector('#chk')).ready(function(){
+      $('#chk div').each(function (index, item) {
+        arr.push(item.innerHTML);
+        item.remove()
+      });
+      $('#ul1 li button').each(function (index, item){
+        if (item.value == arr[0]){
+          arr.shift()
+          item.disabled = true;
+        }
+      })
+    });
+
+  </script>
+  {% endblock %}

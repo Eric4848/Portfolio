@@ -1,0 +1,456 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<style>
+    #row {
+        width: 1200px;
+        display: flex;
+        flex-direction: row;
+        margin: 40px auto;
+        justify-content: space-between;
+    }
+
+    #index{
+        width: 100%;
+        height: 1300px;
+    }
+    
+    #sectioncont{
+        visibility: hidden;
+        border: 1px solid #d9e1e5;
+        border-radius: 10px;
+        position: relative;
+    }
+    #sectionwrap{
+        width: 580px;
+        height: 380px;
+        display: flex;
+        flex-direction: row;
+    }
+    .section{
+        width:528px;
+        height: 380px;
+        position: relative;
+        padding: 4px;
+    }
+    #menuwrap{
+        display: flex;
+        flex-direction: row;
+    }
+    .sectionid{
+        width: 116px;
+        height: 30px;
+        border-left: 1px solid #d9e1e5;
+        border-top: 1px solid #d9e1e5;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+    }
+    .slick-prev{
+        position: absolute;
+        top:50%;
+        z-index: 3;
+        border: none;
+        background-color: #ffffff00;
+    }
+    .slick-next{
+        position: absolute;
+        top:50%;
+        right: 0;
+        z-index: 3;
+        border: none;
+        background-color: #ffffff00;
+    }
+    .sectiontag{
+        /* position: absolute; */
+        margin-top: -4px;
+        margin-left: -4px;
+        z-index: 3;
+        top: 0px;
+        left: 0px;
+        color: white;
+        width: 580px;
+        height: 32px;
+        background-color: #808080;
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    #btn0{
+        border-left: 0px;
+        border-bottom-left-radius: 10px;
+    }
+    #btn4{
+        border-bottom-right-radius: 10px;
+    }
+    .active{
+        background-color: #808080;
+        color:white;
+        box-shadow: 3px 3px 6px 0 rgba(0, 0, 0, 0.16);
+    }
+    #container {
+        width: 1200px;
+        height: 500px;
+        padding: 10px;
+    }
+    #cloudwrap{
+        width: 1200px;
+        height: 500px;
+        margin: 0 auto;
+        position: relative;
+        margin-top: 40px;
+        border: 1px solid #d9e1e5;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    #cloudtitle{
+        position: absolute;
+        color: white;
+        text-align: center;
+        background-color: #808080;
+        width: 1200px;
+        height: 32px;
+        z-index: 4;
+        padding-top: 3px;
+    }
+    #keywordtooltip{
+        background-color: white;
+        position: absolute;
+        right: 10px;
+        z-index: 4;
+        font-size: 11px;
+        bottom: 10px;
+    }
+</style>
+<script>
+    $(document).ready(function(){
+        document.getElementById('sectioncont').style.visibility='visible';
+        sectionBtns = document.querySelectorAll(".sectionid");
+        sectionBtns.forEach(function(sectionBtn){
+            sectionBtn.addEventListener('click',function(e){
+                if (this.id == 'btn0'){
+                    $('#sectionwrap').slick('goTo', 0)
+                }
+                if (this.id == 'btn1'){
+                    $('#sectionwrap').slick('goTo', 1)
+                }
+                if (this.id == 'btn2'){
+                    $('#sectionwrap').slick('goTo', 2)
+                }
+                if (this.id == 'btn3'){
+                    $('#sectionwrap').slick('goTo', 3)
+                }
+                if (this.id == 'btn4'){
+                    $('#sectionwrap').slick('goTo', 4)
+                }
+            });
+        });
+
+        $('#sectionwrap').on('beforeChange', function(event, slick, currentSlide, nextSlide){
+            // document.querySelector("#btn"+currentSlide).style="background-color: rgba(255, 255, 255); color:black; box-shadow: none;"
+            // document.querySelector("#btn"+nextSlide).style="background-color: #808080; color:white; box-shadow: 3px 3px 6px 0 rgba(0, 0, 0, 0.16);"
+            document.querySelector("#btn"+currentSlide).classList.remove('active')
+            document.querySelector("#btn"+nextSlide).classList.add('active')
+        });
+
+        $(function(){
+            $('#sectionwrap').slick({
+                slide: 'div',        //슬라이드 되어야 할 태그
+                infinite : false,     //무한 반복 옵션     
+                slidesToShow : 1,        // 한 화면에 보여질 컨텐츠 개수
+                slidesToScroll : 1,        //스크롤 한번에 움직일 컨텐츠 개수
+                speed : 500,     // 다음 버튼 누르고 다음 화면 뜨는데까지 걸리는 시간(ms)
+                arrows : true,         // 옆으로 이동하는 화살표 표시 여부
+                dots : false,         // 스크롤바 아래 점으로 페이지네이션 여부
+                autoplay : false,            // 자동 스크롤 사용 여부
+                autoplaySpeed : 2000,         // 자동 스크롤 시 다음으로 넘어가는데 걸리는 시간 (ms)
+                pauseOnHover : true,        // 슬라이드 이동    시 마우스 호버하면 슬라이더 멈추게 설정
+                vertical : false,        // 세로 방향 슬라이드 옵션
+                prevArrow : "<button type='button' class='slick-prev'><i class='fa-solid fa-arrow-left' style='color: #808080;'></i></button>",
+                nextArrow : "<button type='button' class='slick-next'><i class='fa-solid fa-arrow-right' style='color: #808080;'></button>",
+                draggable : true,     //드래그 가능 여부 
+            });
+        });
+    });
+</script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-tag-cloud.min.js"></script>
+<script type='text/javascript' src='https://www.weatherapi.com/weather/widget.ashx?loc=1377353&wid=4&tu=1&div=weatherapi-weather-widget-4' async></script>
+
+<div id="index">
+    <style>
+        #introwrap{
+            width: 1200px;
+            height: 250px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+        #intro{
+            width: 1200px;
+            height: 180px;
+            position: relative;
+            background-color: #f8f8f7;
+            /* background-color: white; */
+            border-radius: 15px;
+            display: flex;
+            /* flex-direction: row; */
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            /* border: 3px solid #B4B4B4; */
+        }
+        #announce{
+            font-size: 25px;
+            font-weight: 300;
+            /* color: white; */
+        }
+        #HL{
+            background-color: #E9d259;
+            font-weight: 540;
+        }
+        #icon{
+            /* 글자만 가로 중앙 정렬할 때 사용 */
+            /* position: absolute; */
+            /* left: 20px; */
+            /* transform: translate(0, -20px); */
+            /* transform: rotate(-0deg) translate(0, -10px); */
+            /* 직접 정렬할 때 사용 */
+            margin-left: -70px;
+            margin-top: -20px;
+        }
+        #btnh{
+            /* border: 1px solid #e3e3e3; */
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            padding-left: 20px;
+            padding-right: 20px;
+            /* width: 170px; */
+            /* height: 32px; */
+            font-size: 15px;
+            position: absolute;
+            bottom: -40px;
+            right: 0;
+            /* background-color: #fafafa; */
+            background-color: white;
+            /* background: linear-gradient(#ffffff 0%, #fafafa 20%,  #ececec 100%); */
+            margin-top: 50px;
+            /* box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px; */
+        }
+        #btna{
+            text-decoration: none;
+            font-size: 15px;
+            position: absolute;
+            bottom: 10px;
+            right: 0;
+            margin-top: 10px;
+        }
+        .clk{
+            box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset !important;
+        }
+        #mention{
+            position: absolute;
+            bottom: 10px;
+            left: auto;
+        }
+
+        #most{
+            color: #808080;
+            border-bottom-style: solid;
+        }
+
+        #most:hover{
+            color: #E9d259;
+        }
+    </style>
+    <script>
+        document.addEventListener('mouseup', function (e) {
+            var btn = document.getElementById('btnh')
+            btn.classList.remove('clk');
+        });
+
+        function mousedown(){
+            var btn = document.getElementById('btnh')
+            btn.classList.add('clk');
+        }
+        function mouseup(){
+            var btn = document.getElementById('btnh')
+            btn.classList.remove('clk')
+        }
+
+        function move(to){
+            var url = "/search/?search=" + to.innerHTML + "&press=&section=%5B100%5D";
+            window.location.href = url
+        }
+    </script>
+<div id="introwrap">
+    <div id="intro">
+        <table>
+            <tr>
+                <td rowspan="2">
+                    <img src="{% static 'news/logo.ico' %}" id="icon" alt="메추리_icon" width="200px" height="198px">
+                </td>
+                <td style="align-items: center;">
+                    <div id="announce" style="text-align: center; justify-content: center;">
+                        {% if request.user.is_authenticated %}
+                        <span>안녕하세요 {{request.user}}님</span>
+                        {% endif %}
+                        <span>현재 날씨는 </span>
+                        {% if wether %}
+                        <span>
+                            {{wether.current.condition.text}}
+                        </span>
+                        {% endif %}
+                        <span>이며 오늘의 키워드는 <span id="most" onclick="move(this)"></span> 입니다.</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; justify-content: center;">
+                    <div id="announce">오간뉴는 바쁜 현대인들을 위한 <strong id="HL">주요 뉴스 요약 서비스</strong>를 제공합니다</div>
+                </td>
+            </tr>
+        </table>
+        <button id="btnh" onclick="location.href='/main'">기사 보러가기  <i class="fa-solid fa-chevron-right" style="color: #5e5e5e;"></i></button>
+    </div>
+</div>
+
+    <!-- <div id="announce" style="text-align: center;">
+        {% if request.user.is_authenticated %}
+        <span>안녕하세요 {{request.user}}님</span>
+        {% endif %}
+        <span>현재 날씨는 </span>
+        {% if wether %}
+        <span>
+            {{wether.current.condition.text}}
+        </span>
+        {% endif %}
+        <span>이며 오늘의 키워드는 <span id="most" onclick="move(this)"></span> 입니다.</span>
+    </div>
+    <div id="introwrap">
+        <div id="intro">
+            <img src="{% static 'news/logo.ico' %}" id="icon" alt="메추리_icon" width="200px" height="198px">
+            <div id="announce">오간뉴는 바쁜 현대인들을 위한 <strong id="HL">주요 뉴스 요약 서비스</strong>를 제공합니다</div>
+        </div>
+        <button id="btnh" onclick="location.href='/main'">기사 보러가기  <i class="fa-solid fa-chevron-right" style="color: #5e5e5e;"></i></button>
+    </div> -->
+
+    
+
+    <div id="cloudwrap">
+        <div id="cloudtitle">오늘의 키워드</div>
+        <div id="container"></div>
+        <div id="keywordtooltip">키워드를 클릭하면 해당 키워드 검색 페이지로 이동합니다</div>
+    </div>
+
+    <div id="row">
+        <div style="width:580px;" id="weatherapi-weather-widget-4"></div>
+        <div id="sectioncont">
+            <div id="sectionwrap">
+                <div id="section1" class="section"><div id="tag1" class="sectiontag">정치</div></div>
+                <div id="section2" class="section"><div id="tag2" class="sectiontag">경제</div></div>
+                <div id="section3" class="section"><div id="tag3" class="sectiontag">사회</div></div>
+                <div id="section4" class="section"><div id="tag4" class="sectiontag">세계</div></div>
+                <div id="section5" class="section"><div id="tag5" class="sectiontag">IT</div></div>
+            </div>
+            <div id="menuwrap">
+                <div id="btn0" class="sectionid active">정치</div>
+                <div id="btn1" class="sectionid">경제</div>
+                <div id="btn2" class="sectionid">사회</div>
+                <div id="btn3" class="sectionid">세계</div>
+                <div id="btn4" class="sectionid">IT</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    anychart.onDocumentReady(function () {
+       
+        var test = []
+        let posts = JSON.parse("{{ keywords | escapejs }}")
+        let politics = JSON.parse("{{ keywords_politics | escapejs }}")
+        let economics = JSON.parse("{{ keywords_economics | escapejs }}")
+        let social = JSON.parse("{{ keywords_social | escapejs }}")
+        let world = JSON.parse("{{ keywords_world | escapejs }}")
+        let IT = JSON.parse("{{ keywords_IT | escapejs }}")
+        const most = posts[0].x
+        const mostDiv = document.querySelector('#most')
+        mostDiv.innerHTML = most
+        
+        // create a chart and set the data
+        var chart = anychart.tagCloud(posts);
+        var politics_chart = anychart.tagCloud(politics)
+        var economics_chart = anychart.tagCloud(economics)
+        var social_chart = anychart.tagCloud(social)
+        var world_chart = anychart.tagCloud(world)
+        var IT_chart = anychart.tagCloud(IT)
+
+        // set the container id
+        chart.container("container");
+        politics_chart.container("section1");
+        economics_chart.container("section2");
+        social_chart.container("section3");
+        world_chart.container("section4");
+        IT_chart.container("section5");
+        
+        
+        // initiate drawing the chart
+        chart.draw();
+        politics_chart.draw();
+        economics_chart.draw();
+        social_chart.draw();
+        world_chart.draw();
+        IT_chart.draw();
+
+        // title
+        // chart.title('test title')
+
+        // configure angles
+        // chart.angles([0, 330, 30]);
+
+        // set the mode of the tag cloud
+        // chart.mode("spiral"); // or "rect"
+
+        // add an event listener to open a url on click
+        chart.listen("pointClick", function (e) {
+            var url = "/search/?search=" + e.point.get("x")+"&press=&section=";
+            window.location.href = url
+        });
+        politics_chart.listen("pointClick", function (e) {
+            var url = "/search/?search=" + e.point.get("x")+"&press=&section=%5B100%5D";
+            window.location.href = url
+        });
+        economics_chart.listen("pointClick", function (e) {
+            var url = "/search/?search=" + e.point.get("x")+"&press=&section=%5B101%5D";
+            window.location.href = url
+        });
+        social_chart.listen("pointClick", function (e) {
+            var url = "/search/?search=" + e.point.get("x")+"&press=&section=%5B102%5D";
+            window.location.href = url
+        });
+        world_chart.listen("pointClick", function (e) {
+            var url = "/search/?search=" + e.point.get("x")+"&press=&section=%5B104%5D";
+            window.location.href = url
+        });
+        IT_chart.listen("pointClick", function (e) {
+            var url = "/search/?search=" + e.point.get("x")+"&press=&section=%5B105%5D";
+            window.location.href = url
+        });
+
+    });
+</script>
+{% endblock %}
